@@ -1,46 +1,54 @@
-public class App {
-
-    // RoomInventory Class (Core of UC1)
-import java.util.HashMap;
 import java.util.Map;
 
-    class RoomInventory {
+class SearchService {
 
-        // Centralized Storage
-        private Map<String, Integer> inventory;
+    private RoomInventory inventory;
 
-        // Constructor (Initialize Inventory)
-        public RoomInventory() {
-            inventory = new HashMap<>();
-        }
+    public SearchService(RoomInventory inventory) {
+        this.inventory = inventory;
+    }
 
-        // Register Room Type
-        public void addRoomType(String roomType, int count) {
-            inventory.put(roomType, count);
-        }
+    // Read-only search
+    public void searchAvailableRooms(Room[] rooms) {
 
-        // Get Availability
-        public int getAvailability(String roomType) {
-            return inventory.getOrDefault(roomType, 0);
-        }
+        System.out.println("=== AVAILABLE ROOMS ===");
 
-        // Update Availability (Controlled)
-        public void updateAvailability(String roomType, int newCount) {
-            if (inventory.containsKey(roomType)) {
-                inventory.put(roomType, newCount);
-            } else {
-                System.out.println("Room type not found!");
-            }
-        }
+        Map<String, Integer> data = inventory.getAllInventory();
 
-        // Display Inventory
-        public void displayInventory() {
-            System.out.println("=== ROOM INVENTORY ===");
-            for (Map.Entry<String, Integer> entry : inventory.entrySet()) {
-                System.out.println("Room Type: " + entry.getKey() +
-                        " | Available: " + entry.getValue());
+        for (Room room : rooms) {
+
+            int available = data.getOrDefault(room.getRoomType(), 0);
+
+            // Defensive Programming: filter unavailable
+            if (available > 0) {
+                room.displayRoomDetails();
+                System.out.println("Available: " + available);
+                System.out.println("----------------------");
             }
         }
     }
+}
 
+public class Main {
+    public static void main(String[] args) {
+
+        // Inventory Setup
+        RoomInventory inventory = new RoomInventory();
+        inventory.addRoomType("Single Room", 5);
+        inventory.addRoomType("Double Room", 0); // Not available
+        inventory.addRoomType("Suite Room", 2);
+
+        // Room Objects (Domain)
+        Room[] rooms = {
+                new SingleRoom(),
+                new DoubleRoom(),
+                new SuiteRoom()
+        };
+
+        // Search Service
+        SearchService searchService = new SearchService(inventory);
+
+        // Guest triggers search
+        searchService.searchAvailableRooms(rooms);
+    }
 }
