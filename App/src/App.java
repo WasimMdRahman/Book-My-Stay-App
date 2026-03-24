@@ -1,100 +1,106 @@
 public class App {
+    // Abstract Class
+    abstract class Room {
+        private String roomType;
+        private int beds;
+        private double price;
 
-    import java.util.*;
+        // Constructor
+        public Room(String roomType, int beds, double price) {
+            this.roomType = roomType;
+            this.beds = beds;
+            this.price = price;
+        }
 
-    // Room Class
-    class Room {
-        int roomId;
-        String type;
-        boolean isBooked;
+        // Encapsulation (Getters)
+        public String getRoomType() {
+            return roomType;
+        }
 
-        Room(int roomId, String type) {
-            this.roomId = roomId;
-            this.type = type;
-            this.isBooked = false;
+        public int getBeds() {
+            return beds;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        // Abstract Method
+        public abstract void displayRoomDetails();
+    }
+
+    // Single Room Class
+    class SingleRoom extends Room {
+        public SingleRoom() {
+            super("Single Room", 1, 1000);
+        }
+
+        @Override
+        public void displayRoomDetails() {
+            System.out.println("Type: " + getRoomType());
+            System.out.println("Beds: " + getBeds());
+            System.out.println("Price: ₹" + getPrice());
         }
     }
 
-    // Booking Class
-    class Booking {
-        int bookingId;
-        String customerName;
-        int roomId;
+    // Double Room Class
+    class DoubleRoom extends Room {
+        public DoubleRoom() {
+            super("Double Room", 2, 2000);
+        }
 
-        Booking(int bookingId, String customerName, int roomId) {
-            this.bookingId = bookingId;
-            this.customerName = customerName;
-            this.roomId = roomId;
+        @Override
+        public void displayRoomDetails() {
+            System.out.println("Type: " + getRoomType());
+            System.out.println("Beds: " + getBeds());
+            System.out.println("Price: ₹" + getPrice());
         }
     }
 
-    // Main System Class
-    class HotelSystem {
-
-        private Map<Integer, Room> rooms = new HashMap<>();
-        private Queue<Booking> bookingQueue = new LinkedList<>();
-        private Set<Integer> bookedRooms = new HashSet<>();
-
-        private int bookingCounter = 1;
-
-        // Add Room
-        public void addRoom(int id, String type) {
-            rooms.put(id, new Room(id, type));
-            System.out.println("Room added: " + id);
+    // Suite Room Class
+    class SuiteRoom extends Room {
+        public SuiteRoom() {
+            super("Suite Room", 3, 5000);
         }
 
-        // Book Room
-        public void bookRoom(String customerName, int roomId) {
-            if (!rooms.containsKey(roomId)) {
-                System.out.println("Room does not exist.");
-                return;
-            }
-
-            if (bookedRooms.contains(roomId)) {
-                System.out.println("Room already booked!");
-                return;
-            }
-
-            Booking booking = new Booking(bookingCounter++, customerName, roomId);
-            bookingQueue.add(booking);
-            bookedRooms.add(roomId);
-            rooms.get(roomId).isBooked = true;
-
-            System.out.println("Booking successful for " + customerName);
-        }
-
-        // View Bookings
-        public void viewBookings() {
-            if (bookingQueue.isEmpty()) {
-                System.out.println("No bookings yet.");
-                return;
-            }
-
-            for (Booking b : bookingQueue) {
-                System.out.println("Booking ID: " + b.bookingId +
-                        ", Name: " + b.customerName +
-                        ", Room: " + b.roomId);
-            }
+        @Override
+        public void displayRoomDetails() {
+            System.out.println("Type: " + getRoomType());
+            System.out.println("Beds: " + getBeds());
+            System.out.println("Price: ₹" + getPrice());
         }
     }
 
-    // Driver Class
+    // Main Class
     public class Main {
         public static void main(String[] args) {
 
-            HotelSystem system = new HotelSystem();
+            // Creating Room Objects (Polymorphism)
+            Room single = new SingleRoom();
+            Room doubleRoom = new DoubleRoom();
+            Room suite = new SuiteRoom();
 
-            // Adding Rooms
-            system.addRoom(101, "Single");
-            system.addRoom(102, "Double");
+            // Availability (Simple Variables)
+            int singleAvailable = 5;
+            int doubleAvailable = 3;
+            int suiteAvailable = 2;
 
-            // Booking Rooms
-            system.bookRoom("Wasim", 101);
-            system.bookRoom("Rahman", 101); // Should fail
-            system.bookRoom("Ali", 102);
+            // Display Data
+            System.out.println("=== HOTEL ROOM DETAILS ===\n");
 
-            // View Bookings
-            system.viewBookings();
+            single.displayRoomDetails();
+            System.out.println("Available: " + singleAvailable);
+            System.out.println("------------------------");
+
+            doubleRoom.displayRoomDetails();
+            System.out.println("Available: " + doubleAvailable);
+            System.out.println("------------------------");
+
+            suite.displayRoomDetails();
+            System.out.println("Available: " + suiteAvailable);
+            System.out.println("------------------------");
+
+            System.out.println("\nApplication Terminated.");
         }
     }
 }
